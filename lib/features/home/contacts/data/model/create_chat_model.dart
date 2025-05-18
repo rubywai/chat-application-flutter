@@ -1,24 +1,24 @@
-class LoginModel {
-  LoginModel({
+class CreateChatModel {
+  CreateChatModel({
     this.status,
     this.message,
     this.data,
   });
 
-  LoginModel.fromJson(dynamic json) {
+  CreateChatModel.fromJson(dynamic json) {
     status = json['status'];
     message = json['message'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    data = json['data'] != null ? CreateChatData.fromJson(json['data']) : null;
   }
   bool? status;
   String? message;
-  Data? data;
-  LoginModel copyWith({
+  CreateChatData? data;
+  CreateChatModel copyWith({
     bool? status,
     String? message,
-    Data? data,
+    CreateChatData? data,
   }) =>
-      LoginModel(
+      CreateChatModel(
         status: status ?? this.status,
         message: message ?? this.message,
         data: data ?? this.data,
@@ -34,38 +34,82 @@ class LoginModel {
   }
 }
 
-class Data {
-  Data({
-    this.user,
-    this.token,
+class CreateChatData {
+  CreateChatData({
+    this.id,
+    this.users,
+    this.latestMessage,
+    this.groupName,
+    this.isGroupChat,
+    this.createdAt,
+    this.updatedAt,
+    this.v,
   });
 
-  Data.fromJson(dynamic json) {
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
-    token = json['token'];
+  CreateChatData.fromJson(dynamic json) {
+    id = json['_id'];
+    if (json['users'] != null) {
+      users = [];
+      json['users'].forEach((v) {
+        users?.add(Users.fromJson(v));
+      });
+    }
+    latestMessage = json['latest_message'];
+    groupName = json['group_name'];
+    isGroupChat = json['is_group_chat'];
+
+    createdAt = json['createdAt'];
+    updatedAt = json['updatedAt'];
+    v = json['__v'];
   }
-  User? user;
-  String? token;
-  Data copyWith({
-    User? user,
-    String? token,
+  String? id;
+  List<Users>? users;
+  dynamic latestMessage;
+  dynamic groupName;
+  bool? isGroupChat;
+  String? createdAt;
+  String? updatedAt;
+  num? v;
+  CreateChatData copyWith({
+    String? id,
+    List<Users>? users,
+    dynamic latestMessage,
+    dynamic groupName,
+    bool? isGroupChat,
+    List<dynamic>? groupAdmins,
+    String? createdAt,
+    String? updatedAt,
+    num? v,
   }) =>
-      Data(
-        user: user ?? this.user,
-        token: token ?? this.token,
+      CreateChatData(
+        id: id ?? this.id,
+        users: users ?? this.users,
+        latestMessage: latestMessage ?? this.latestMessage,
+        groupName: groupName ?? this.groupName,
+        isGroupChat: isGroupChat ?? this.isGroupChat,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+        v: v ?? this.v,
       );
   Map<String, dynamic> toJson() {
     final map = <String, dynamic>{};
-    if (user != null) {
-      map['user'] = user?.toJson();
+    map['_id'] = id;
+    if (users != null) {
+      map['users'] = users?.map((v) => v.toJson()).toList();
     }
-    map['token'] = token;
+    map['latest_message'] = latestMessage;
+    map['group_name'] = groupName;
+    map['is_group_chat'] = isGroupChat;
+
+    map['createdAt'] = createdAt;
+    map['updatedAt'] = updatedAt;
+    map['__v'] = v;
     return map;
   }
 }
 
-class User {
-  User({
+class Users {
+  Users({
     this.id,
     this.name,
     this.cover,
@@ -77,7 +121,7 @@ class User {
     this.v,
   });
 
-  User.fromJson(dynamic json) {
+  Users.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
     cover = json['cover'];
@@ -97,7 +141,7 @@ class User {
   String? createdAt;
   String? updatedAt;
   num? v;
-  User copyWith({
+  Users copyWith({
     String? id,
     String? name,
     dynamic cover,
@@ -108,7 +152,7 @@ class User {
     String? updatedAt,
     num? v,
   }) =>
-      User(
+      Users(
         id: id ?? this.id,
         name: name ?? this.name,
         cover: cover ?? this.cover,

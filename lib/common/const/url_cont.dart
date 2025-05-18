@@ -4,4 +4,6 @@ class UrlConst {
   static const String otpRequest = '/user/otp-request';
   static const String emailVerify = '/user/email-verify';
   static const String login = 'user/login';
+  static const String user = 'user?search';
+  static const String createChat = 'chat/create';
 }

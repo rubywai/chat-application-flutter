@@ -18,6 +18,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
   final LoginProvider _loginProvider = LoginProvider(() => LoginNotifier());
   String? _email;
   String? _password;
+  bool _isRedirect = false;
   @override
   Widget build(BuildContext context) {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
@@ -31,6 +32,12 @@ class _LoginPageState extends ConsumerState<LoginPage> {
     bool isLoading = stateModel.isLoading;
     bool isFailed = stateModel.isFailed;
     bool isSuccess = stateModel.isSuccess;
+
+    ref.listen(_loginProvider, (oldState, newState) {
+      if (newState.isSuccess && !_isRedirect) {
+        context.go("/contact");
+      }
+    });
 
     return Scaffold(
       backgroundColor: colorScheme.surface,
@@ -102,6 +109,7 @@ class _LoginPageState extends ConsumerState<LoginPage> {
                       height: 8.0,
                     ),
                     TextFormField(
+                      obscureText: true,
                       style: textTheme.bodyLarge?.copyWith(
                         color: colorScheme.onSurface,
                       ),

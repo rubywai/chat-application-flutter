@@ -1,24 +1,29 @@
-class LoginModel {
-  LoginModel({
+class ContactModel {
+  ContactModel({
     this.status,
     this.message,
     this.data,
   });
 
-  LoginModel.fromJson(dynamic json) {
+  ContactModel.fromJson(dynamic json) {
     status = json['status'];
     message = json['message'];
-    data = json['data'] != null ? Data.fromJson(json['data']) : null;
+    if (json['data'] != null) {
+      data = [];
+      json['data'].forEach((v) {
+        data?.add(Data.fromJson(v));
+      });
+    }
   }
   bool? status;
   String? message;
-  Data? data;
-  LoginModel copyWith({
+  List<Data>? data;
+  ContactModel copyWith({
     bool? status,
     String? message,
-    Data? data,
+    List<Data>? data,
   }) =>
-      LoginModel(
+      ContactModel(
         status: status ?? this.status,
         message: message ?? this.message,
         data: data ?? this.data,
@@ -28,7 +33,7 @@ class LoginModel {
     map['status'] = status;
     map['message'] = message;
     if (data != null) {
-      map['data'] = data?.toJson();
+      map['data'] = data?.map((v) => v.toJson()).toList();
     }
     return map;
   }
@@ -36,36 +41,6 @@ class LoginModel {
 
 class Data {
   Data({
-    this.user,
-    this.token,
-  });
-
-  Data.fromJson(dynamic json) {
-    user = json['user'] != null ? User.fromJson(json['user']) : null;
-    token = json['token'];
-  }
-  User? user;
-  String? token;
-  Data copyWith({
-    User? user,
-    String? token,
-  }) =>
-      Data(
-        user: user ?? this.user,
-        token: token ?? this.token,
-      );
-  Map<String, dynamic> toJson() {
-    final map = <String, dynamic>{};
-    if (user != null) {
-      map['user'] = user?.toJson();
-    }
-    map['token'] = token;
-    return map;
-  }
-}
-
-class User {
-  User({
     this.id,
     this.name,
     this.cover,
@@ -77,7 +52,7 @@ class User {
     this.v,
   });
 
-  User.fromJson(dynamic json) {
+  Data.fromJson(dynamic json) {
     id = json['_id'];
     name = json['name'];
     cover = json['cover'];
@@ -97,7 +72,7 @@ class User {
   String? createdAt;
   String? updatedAt;
   num? v;
-  User copyWith({
+  Data copyWith({
     String? id,
     String? name,
     dynamic cover,
@@ -108,7 +83,7 @@ class User {
     String? updatedAt,
     num? v,
   }) =>
-      User(
+      Data(
         id: id ?? this.id,
         name: name ?? this.name,
         cover: cover ?? this.cover,
