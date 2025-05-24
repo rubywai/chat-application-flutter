@@ -23,6 +23,7 @@ Future<void> setupLocator() async {
   authDio.interceptors.add(
     PrettyDioLogger(
       requestHeader: true,
+      requestBody: true,
     ),
   );
   authDio.interceptors.add(

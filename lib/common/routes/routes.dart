@@ -1,3 +1,4 @@
+import 'package:chat_application/features/home/chat_detail/page/chat_detail_page.dart';
 import 'package:chat_application/features/home/chat_list/page/chat_list_page.dart';
 import 'package:chat_application/features/home/contacts/page/contact_page.dart';
 import 'package:chat_application/features/home/home_page.dart';
@@ -78,6 +79,12 @@ final router = GoRouter(
           ],
         ),
       ],
-    )
+    ),
+    GoRoute(
+        name: 'chat-detail',
+        path: '/chat-detail',
+        builder: (context, state) {
+          return ChatDetailPage();
+        })
   ],
 );

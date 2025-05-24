@@ -32,7 +32,7 @@ class _OtpConfirmPageState extends ConsumerState<OtpConfirmPage> {
     ref.listen(_otpConfirmProvider, (oldState, newState) {
       if (newState.isSuccess && !_isRedirect) {
         _isRedirect = true;
-        context.go("login");
+        context.go("/login");
       }
     });
 

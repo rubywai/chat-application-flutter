@@ -5,6 +5,7 @@ import 'package:chat_application/features/home/contacts/data/model/create_chat_m
 import 'package:chat_application/features/home/contacts/notifier/contact_state_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../notifier/contact_notifier.dart';
 
@@ -98,19 +99,7 @@ class _ContactPageState extends ConsumerState<ContactPage> {
                 Data? contact = contactModel?.data?[index];
                 return InkWell(
                   onTap: () async {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Creating chatg please wait'),
-                      ),
-                    );
-                    CreateChatModel chatModel =
-                        await notifier.createChat(contact?.id ?? '');
-                    print(chatModel);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text('Success'),
-                      ),
-                    );
+                    _createChat(contact);
                   },
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,5 +133,39 @@ class _ContactPageState extends ConsumerState<ContactPage> {
           )
       ],
     );
+  }
+
+  void _createChat(Data? contact) async {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return Center(
+          child: CircularProgressIndicator(),
+        );
+      },
+      useRootNavigator: false,
+    );
+    try {
+      ContactNotifier notifier = ref.read(_provider.notifier);
+      CreateChatModel chatModel = await notifier.createChat(contact?.id ?? '');
+      if (mounted) {
+        context.push(
+          "/chat-detail",
+          extra: chatModel,
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Create chat error'),
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        Navigator.pop(context);
+      }
+    }
   }
 }
