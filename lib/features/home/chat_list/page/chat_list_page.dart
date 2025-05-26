@@ -1,6 +1,7 @@
 import 'package:chat_application/common/storage/app_storage.dart';
 import 'package:chat_application/common/theme/extension/color_neutral.dart';
 import 'package:chat_application/common/theme/extension/meta_data_text_theme.dart';
+import 'package:chat_application/common/web_socket/chat_socket.dart';
 import 'package:chat_application/features/home/chat_list/data/models/chat_list_model.dart';
 import 'package:chat_application/features/home/chat_list/notifiers/chat_list_notifier.dart';
 import 'package:chat_application/features/home/chat_list/notifiers/chat_list_state_model.dart';
@@ -28,6 +29,13 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
       ref.read(_chatListProvider.notifier).getChatList();
+      ChatSocket.listen(
+          cmd: ChatSocket.newMessage,
+          callback: (v) {
+            if (mounted) {
+              ref.read(_chatListProvider.notifier).getChatList(loading: false);
+            }
+          });
     });
   }
 

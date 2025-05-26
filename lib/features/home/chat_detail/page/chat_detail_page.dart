@@ -48,10 +48,18 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
         ChatSocket.listen(
             cmd: ChatSocket.newMessage,
             callback: (v) {
-              ref.read(_provider.notifier).getAllMessage(
-                    id,
-                    showLoading: false,
-                  );
+              if (mounted) {
+                String? latestMessage = v['content'];
+                if (latestMessage != null) {
+                  ref
+                      .read(_provider.notifier)
+                      .addTemReceiveMessage(latestMessage);
+                }
+                ref.read(_provider.notifier).getAllMessage(
+                      id,
+                      showLoading: false,
+                    );
+              }
             });
       }
     });
@@ -118,6 +126,42 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                     },
                   ),
                 ),
+              if (isSuccess)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      for (int i = 0;
+                          i < detailStateModel.tempSendMessage.length;
+                          i++)
+                        BubbleSpecialThree(
+                          isSender: true,
+                          color: colorBrand.brandDefault,
+                          text: detailStateModel.tempSendMessage[i],
+                          textStyle: textTheme.bodyMedium!
+                              .copyWith(color: colorNeutral.buttonText),
+                        )
+                    ],
+                  ),
+                ),
+              if (isSuccess)
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Column(
+                    children: [
+                      for (int i = 0;
+                          i < detailStateModel.tempRecMessage.length;
+                          i++)
+                        BubbleSpecialThree(
+                          isSender: false,
+                          color: colorScheme.surfaceContainerLow,
+                          text: detailStateModel.tempRecMessage[i],
+                          textStyle: textTheme.bodyMedium!
+                              .copyWith(color: colorScheme.onSurface),
+                        ),
+                    ],
+                  ),
+                ),
             ],
           )),
           _chatTextFiled(),
@@ -177,6 +221,7 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     try {
       String? id = _createChatModel?.data?.id;
       if (id != null) {
+        ref.read(_provider.notifier).addTemSendMessage(_controller.text);
         final data = await ref.read(_provider.notifier).sendMessage(
               chatId: id,
               content: _controller.text,

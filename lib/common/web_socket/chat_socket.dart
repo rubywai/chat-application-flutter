@@ -22,7 +22,6 @@ class ChatSocket {
   }
 
   static void emit({required String cmd, required dynamic data}) {
-    print("emit: $cmd - $data");
     socket.emit(cmd, data);
   }
 

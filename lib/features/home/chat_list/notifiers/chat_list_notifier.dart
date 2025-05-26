@@ -13,13 +13,15 @@ class ChatListNotifier extends Notifier<ChatListStateModel> {
     return ChatListStateModel();
   }
 
-  void getChatList() async {
+  void getChatList({bool loading = true}) async {
     try {
-      state = state.copyWith(
-        isFailed: false,
-        isSuccess: false,
-        isLoading: true,
-      );
+      if (loading) {
+        state = state.copyWith(
+          isFailed: false,
+          isSuccess: false,
+          isLoading: true,
+        );
+      }
       ChatListModel chatListModel = await _chatListService.getChatList();
       state = state.copyWith(
         isLoading: false,
