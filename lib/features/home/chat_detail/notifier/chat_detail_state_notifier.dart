@@ -1,4 +1,5 @@
 import 'package:chat_application/features/home/chat_detail/data/models/message_model.dart';
+import 'package:chat_application/features/home/chat_detail/data/models/send_message_model.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/services/chat_detail_service.dart';
@@ -16,13 +17,15 @@ class ChatDetailStateNotifier extends Notifier<ChatDetailStateModel> {
     );
   }
 
-  void getAllMessage(String chatId) async {
+  void getAllMessage(String chatId, {bool showLoading = true}) async {
     try {
-      state = state.copyWith(
-        isSuccess: false,
-        isFailed: false,
-        isLoading: true,
-      );
+      if (showLoading) {
+        state = state.copyWith(
+          isSuccess: false,
+          isFailed: false,
+          isLoading: true,
+        );
+      }
       MessageModel messageModel = await _service.getAllMessage(chatId: chatId);
       state = state.copyWith(
         messageModel: messageModel,
@@ -37,15 +40,16 @@ class ChatDetailStateNotifier extends Notifier<ChatDetailStateModel> {
     }
   }
 
-  Future<void> sendMessage({
+  Future<Data?> sendMessage({
     required String chatId,
     required String content,
   }) async {
     try {
-      _service.sendMessage(
+      SendMessageModel sendMessageModel = await _service.sendMessage(
         chatId: chatId,
         content: content,
       );
+      return sendMessageModel.data;
     } catch (e) {
       return Future.error(e);
     }

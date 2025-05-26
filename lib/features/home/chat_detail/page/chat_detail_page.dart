@@ -1,4 +1,7 @@
+import 'dart:io';
+
 import 'package:chat_application/common/theme/extension/color_neutral.dart';
+import 'package:chat_application/common/web_socket/chat_socket.dart';
 import 'package:chat_application/features/home/chat_detail/data/models/message_model.dart';
 import 'package:chat_application/features/home/chat_detail/notifier/chat_detail_state_model.dart';
 import 'package:chat_application/features/home/chat_detail/notifier/chat_detail_state_notifier.dart';
@@ -41,6 +44,15 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
       String? id = model?.data?.id;
       if (id != null) {
         ref.read(_provider.notifier).getAllMessage(id);
+        ChatSocket.emit(cmd: ChatSocket.joinRoom, data: id);
+        ChatSocket.listen(
+            cmd: ChatSocket.newMessage,
+            callback: (v) {
+              ref.read(_provider.notifier).getAllMessage(
+                    id,
+                    showLoading: false,
+                  );
+            });
       }
     });
   }
@@ -165,10 +177,14 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
     try {
       String? id = _createChatModel?.data?.id;
       if (id != null) {
-        await ref.read(_provider.notifier).sendMessage(
+        final data = await ref.read(_provider.notifier).sendMessage(
               chatId: id,
               content: _controller.text,
             );
+        ChatSocket.emit(
+          cmd: ChatSocket.sendMessage,
+          data: data?.toJson(),
+        );
         _controller.clear();
       }
     } catch (e) {
