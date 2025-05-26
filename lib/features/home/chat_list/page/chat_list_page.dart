@@ -1,4 +1,5 @@
 import 'package:chat_application/common/storage/app_storage.dart';
+import 'package:chat_application/common/theme/extension/color_neutral.dart';
 import 'package:chat_application/common/theme/extension/meta_data_text_theme.dart';
 import 'package:chat_application/features/home/chat_list/data/models/chat_list_model.dart';
 import 'package:chat_application/features/home/chat_list/notifiers/chat_list_notifier.dart';
@@ -38,6 +39,7 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
     MetaDataTextTheme metaDataTextTheme =
         Theme.of(context).extension<MetaDataTextTheme>()!;
     ColorScheme colorScheme = Theme.of(context).colorScheme;
+    ColorNeutral colorNeutral = Theme.of(context).extension<ColorNeutral>()!;
 
     bool isLoading = stateModel.isLoading;
     bool isSuccess = stateModel.isSuccess;
@@ -65,31 +67,35 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
                 ChatListUser? otherUser = _getOtherUser(chat);
                 return InkWell(
                   onTap: () {
-                    _createChat(chat);
+                    _createChat(otherUser?.id);
                   },
-                  child: Card(
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            otherUser?.name ?? '',
-                            style: textTheme.bodyLarge?.copyWith(
-                              color: colorScheme.onSurface,
-                            ),
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          otherUser?.name ?? '',
+                          style: textTheme.bodyMedium?.copyWith(
+                            color: colorScheme.onSurface,
                           ),
-                          SizedBox(
-                            height: 8.0,
+                        ),
+                        SizedBox(
+                          height: 8.0,
+                        ),
+                        Text(
+                          chat.latestMessage?.content ?? '',
+                          style: metaDataTextTheme.metaData1.copyWith(
+                            color: colorScheme.onSurfaceVariant,
                           ),
-                          Text(
-                            chat.latestMessage?.content ?? '',
-                            style: metaDataTextTheme.metaData1.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                        SizedBox(
+                          height: 16.0,
+                        ),
+                        Divider(
+                          color: colorNeutral.neutralLine,
+                        )
+                      ],
                     ),
                   ),
                 );
@@ -101,8 +107,8 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
   }
 
   ChatListUser? _getOtherUser(Data? data) {
-    AppStorage _appStorage = GetIt.I.get();
-    String myId = _appStorage.getUserId();
+    AppStorage appStorage = GetIt.I.get();
+    String myId = appStorage.getUserId();
     List<ChatListUser> users = data?.users ?? [];
 
     if (users.isNotEmpty && users.length == 2) {
@@ -112,7 +118,7 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
     return null;
   }
 
-  void _createChat(Data? contact) async {
+  void _createChat(String? id) async {
     showDialog(
       context: context,
       builder: (context) {
@@ -124,7 +130,7 @@ class _ChatListPageState extends ConsumerState<ChatListPage> {
     );
     try {
       ContactNotifier notifier = ref.read(_contactProvider.notifier);
-      CreateChatModel chatModel = await notifier.createChat(contact?.id ?? '');
+      CreateChatModel chatModel = await notifier.createChat(id ?? '');
       if (mounted) {
         context.push(
           "/chat-detail",
