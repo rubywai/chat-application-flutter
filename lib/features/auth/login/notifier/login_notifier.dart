@@ -47,6 +47,7 @@ class LoginNotifier extends Notifier<LoginStateModel> {
       );
       _storage.saveToken(loginModel.data?.token ?? '');
       _storage.saveUserId(loginModel.data?.user?.id ?? '');
+      _storage.saveUserName(loginModel.data?.user?.name ?? '');
       state = state.copyWith(
         isLoading: false,
         isSuccess: true,

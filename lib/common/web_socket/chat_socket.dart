@@ -14,10 +14,19 @@ class ChatSocket {
   static late Socket socket;
 
   static void connect() {
-    socket = io(UrlConst.socket);
+    socket = io(
+      UrlConst.socket,
+      OptionBuilder()
+          .setTransports(['websocket']) // 👈 this is essential
+          .enableAutoConnect()
+          .build(),
+    );
     String id = _appStorage.getUserId();
     socket.onConnect((v) {
       emit(cmd: init, data: id);
+    });
+    socket.onError((e) {
+      //
     });
   }
 

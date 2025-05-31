@@ -1,3 +1,5 @@
+import 'package:chat_application/common/routes/routes.dart';
+import 'package:chat_application/common/theme/theme_notfier.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:pretty_dio_logger/pretty_dio_logger.dart';
@@ -28,8 +30,12 @@ Future<void> setupLocator() async {
   );
   authDio.interceptors.add(
     InterceptorsWrapper(
-      onRequest: (options, interceptor) {
+      onRequest: (options, interceptor) async {
         AppStorage storage = getIt.get<AppStorage>();
+        if (storage.getToken().isEmpty) {
+          await storage.logout();
+          router.goNamed("login");
+        }
         options.headers['Authorization'] = 'Bearer ${storage.getToken()}';
 
         interceptor.next(options);
@@ -37,4 +43,9 @@ Future<void> setupLocator() async {
     ),
   );
   getIt.registerSingleton(authDio, instanceName: 'auth');
+
+  ThemeProvider themeProvider = ThemeProvider(() {
+    return ThemeNotifier();
+  });
+  getIt.registerSingleton(themeProvider);
 }

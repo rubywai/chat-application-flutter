@@ -1,3 +1,4 @@
+import 'package:chat_application/common/theme/theme_notfier.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
@@ -13,22 +14,24 @@ void main() async {
   await setupLocator();
   runApp(
     ProviderScope(
-      child: const MyApp(),
+      child: MyApp(),
     ),
   );
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
+class MyApp extends ConsumerWidget {
+  MyApp({super.key});
+  final ThemeProvider _provider = getIt.get<ThemeProvider>();
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    ThemeStateModel model = ref.watch(_provider);
+    bool isDark = model.isDark;
     return MaterialApp.router(
       debugShowCheckedModeBanner: false,
       theme: ThemeConst.lightTheme(),
       darkTheme: ThemeConst.darkTheme(),
       title: 'Flutter Demo',
-      themeMode: ThemeMode.light,
+      themeMode: isDark ? ThemeMode.dark : ThemeMode.light,
       routerConfig: router,
     );
   }

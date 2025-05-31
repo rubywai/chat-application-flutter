@@ -6,6 +6,7 @@ import 'package:chat_application/features/home/chat_detail/data/models/message_m
 import 'package:chat_application/features/home/chat_detail/notifier/chat_detail_state_model.dart';
 import 'package:chat_application/features/home/chat_detail/notifier/chat_detail_state_notifier.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:get_it/get_it.dart';
@@ -184,15 +185,17 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
   Widget _chatTextFiled() {
     ColorScheme colorScheme = Theme.of(context).colorScheme;
     ColorBrand colorBrand = Theme.of(context).extension<ColorBrand>()!;
-    return Row(
-      children: [
-        Expanded(
-          child: SafeArea(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: 8.0,
-                vertical: 16.0,
-              ),
+    return SafeArea(
+      child: Padding(
+        padding: kIsWeb
+            ? EdgeInsets.zero
+            : Platform.isAndroid
+                ? EdgeInsets.symmetric(vertical: 12.0, horizontal: 8.0)
+                : EdgeInsets.zero,
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
               child: TextField(
                 controller: _controller,
                 onChanged: (_) {
@@ -206,14 +209,17 @@ class _ChatDetailPageState extends ConsumerState<ChatDetailPage> {
                 ),
               ),
             ),
-          ),
+            Center(
+              child: IconButton(
+                color: colorBrand.brandDefault,
+                onPressed:
+                    _controller.text.trim().isNotEmpty ? _sendMessage : null,
+                icon: Icon(Icons.send),
+              ),
+            )
+          ],
         ),
-        IconButton(
-          color: colorBrand.brandDefault,
-          onPressed: _controller.text.trim().isNotEmpty ? _sendMessage : null,
-          icon: Icon(Icons.send),
-        )
-      ],
+      ),
     );
   }
 
